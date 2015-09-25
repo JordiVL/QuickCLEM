@@ -110,10 +110,20 @@ padimt = padarray(handles.imt,[0 128],'both');
 % [ 1 2; 3 4] becomes [ 1 1 2 2; 1 1 2 2; 3 3 4 4; 3 3 4 4 ]
 % The output of this first rescaling allows us to overlay on the overview
 % image.
-upscaledHeatmap = imresize(...
+upscaledHeatmapNoShift = imresize(...
     padimt, ...
     [SEMImageHeightCropped, SEMImageWidth], ...
     'box');
+
+%Here a part of script will be added in order to perform a shift of the
+%overlay image which is put on top of the SEM image. The upscaledheatmap
+%will be shifted in the correct direction and over the correct distance
+%based on the pixelsize of the SEM image. - Jordi
+pixelWidthOdouble = str2double(pixelWidthO(1));
+HoriShift = round( ( ShiftX / ( pixelWidthOdouble ) ) );
+VertShift = round( ( ShiftY / ( pixelWidthOdouble ) ) );
+
+upscaledHeatmap = circshift(upscaledHeatmapNoShift, [VertShift, HoriShift]);
 
 % Next we also would like to overlay on the zoomed image. This shows a
 % smaller area, ZoomFactor times smaller than the overview image. To save
